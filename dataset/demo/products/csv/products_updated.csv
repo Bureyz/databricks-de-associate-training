@@ -1,0 +1,21 @@
+product_id,product_name,subcategory_code,brand,unit_cost,list_price,weight_kg,status
+PROD001861,Generic Clear 929 Plus,Shoe,Generic,324.33,795.9,2.31,Active
+PROD000354,Generic Duży 965 v2,CYCL,Generic,335.68,556.67,10.42,Limited
+PROD001334,CallPro Mąka 191 Updated,PHON,CallPro,385.43,900.32,12.72,Active
+PROD000906,Generic Artystyczny 951 Max,MOVI,Generic,125.06,203.41,4.0,Limited
+PROD001290,Generic Imię 593 2025,GARD,Generic,374.66,582.83,16.03,Active
+PROD001274,Generic Religious 969 Plus,MOVI,Generic,34.74,69.19,6.96,Active
+PROD000939,GamerPro Back 713™ <NEW> [2024] Pro,GAME,GamerPro,293.52,686.08,19.83,Active
+PROD001732,Generic Write 758 Updated,GARD,Generic,487.7,759.5,10.11,Discontinued
+PROD000066,Generic Rzymski 421 2025,MOVI,Generic,557.46,1315.88,3.3,Active
+PROD001324,Generic Powstanie 961 Refresh,MENS,Generic,358.57,705.16,12.43,Active
+PROD000057,Generic Accept 439 2025,SHOE,Generic,480.08,759.72,12.59,Active
+PROD001293,Generic Osiem 236 Plus,,Generic,145.37,300.73,5.07,Active
+PROD001119,PhoneMaster Focus 677 Updated,PHON,PhoneMaster,104.6,217.87,17.92,Active
+PROD000585,Generic World 886 Max,MENS,Generic,494.22,1043.89,4.99,Discontinued
+PROD000375,Generic Physical 211 Refresh,BOOK,Generic,440.62,726.55,3.59,Active
+PROD000275,ComfortLiving Opowiadać 943 2025,FURN,ComfortLiving,136.49,327.48,8.95,Active
+PROD000747,Generic Chłopak 900 Refresh,FITN,Generic,548.63,1184.19,0.58,Limited
+PROD000129,CookPro Fear 147 Plus,KITC,CookPro,188.12,362.68,5.87,Discontinued
+PROD001647,Generic Indeed 192 Refresh,ACCE,Generic,118.4,208.3,15.64,Active
+PROD001853,ListenUp Cold 716 Plus,AUDI,ListenUp,377.64,726.49,1.39,Active

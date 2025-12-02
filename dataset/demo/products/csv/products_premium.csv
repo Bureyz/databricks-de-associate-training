@@ -1,0 +1,31 @@
+product_id,product_name,subcategory_code,brand,unit_cost,list_price,weight_kg,status
+PROD002031,Premium Leather Jacket,CLOT031,LuxuryWear,189.50,399.99,1.85,Active
+PROD002032,Professional Coffee Machine,APPL032,BaristaPro,345.60,699.99,12.50,Active
+PROD002033,Gaming Laptop High-End,COMP033,GameForce,899.40,1599.99,2.80,Active
+PROD002034,Luxury Watch Automatic,ACCS034,TimeMaster,456.75,899.99,0.25,Active
+PROD002035,4K Monitor Ultra-Wide,ELEC035,DisplayPro,278.90,549.99,8.50,Active
+PROD002036,Designer Handbag Leather,BAGS036,StyleLux,167.80,349.99,1.20,Active
+PROD002037,Professional Drone Camera,PHOT037,SkyPro,523.40,999.99,1.95,Active
+PROD002038,High-End Speakers System,AUDI038,AudioMax,678.90,1299.99,15.60,Active
+PROD002039,Premium Mattress Memory Foam,HOME039,SleepLux,389.50,799.99,28.40,Active
+PROD002040,Electric Bike Mountain,SPOR040,EcoBike,789.60,1499.99,25.80,Active
+PROD002041,Smart Home Hub Premium,ELEC041,SmartLiving,156.75,299.99,0.85,Active
+PROD002042,Professional Blender,KITC042,BlendMaster,89.90,179.99,4.20,Active
+PROD002043,Wireless Earbuds Pro,AUDI043,SoundElite,78.45,159.99,0.08,Active
+PROD002044,Gaming Chair Ergonomic,FURN044,ComfortGame,234.60,459.99,18.50,Active
+PROD002045,Smart Thermostat WiFi,HOME045,TempControl,89.75,189.99,0.45,Active
+PROD002046,Professional Camera Lens,PHOT046,LensPro,445.80,899.99,1.25,Active
+PROD002047,Premium Skincare Set,BEAU047,LuxBeauty,78.90,159.99,0.65,Active
+PROD002048,Electric Scooter Premium,SPOR048,RidePro,456.70,899.99,15.20,Active
+PROD002049,Smart TV 65 Inch OLED,ELEC049,VisionMax,1234.50,2199.99,28.90,Active
+PROD002050,Professional Kitchen Scale,KITC050,PrecisionCook,34.90,69.99,1.85,Active
+PROD002051,Luxury Perfume Collection,BEAU051,ScentLux,89.60,199.99,0.35,Active
+PROD002052,High-End Router WiFi 6,COMP052,NetPro,145.80,289.99,0.95,Active
+PROD002053,Premium Wine Set,FOOD053,VintageSelect,156.70,299.99,4.50,Active
+PROD002054,Professional Vacuum Cleaner,HOME054,CleanMax,189.40,379.99,8.20,Active
+PROD002055,Designer Sunglasses Premium,ACCS055,LuxShades,78.90,169.99,0.18,Active
+PROD002056,Smart Door Lock Biometric,HOME056,SecureTech,167.80,339.99,2.10,Active
+PROD002057,Professional Mixer Audio,AUDI057,SoundStudio,289.50,579.99,6.80,Active
+PROD002058,Electric Grill Premium,KITC058,GrillMaster,234.60,469.99,12.40,Active
+PROD002059,Luxury Bedding Set,HOME059,RestLux,89.70,189.99,2.85,Active
+PROD002060,Professional Telescope,PHOT060,StarGaze,456.80,899.99,8.90,Active

@@ -1,0 +1,31 @@
+product_id,product_name,subcategory_code,brand,unit_cost,list_price,weight_kg,status
+PROD002001,Wireless Bluetooth Headphones,ELEC001,TechSound,45.50,89.99,0.35,Active
+PROD002002,Organic Cotton T-Shirt,CLOT002,EcoWear,12.75,24.99,0.18,Active
+PROD002003,Stainless Steel Water Bottle,HOME003,HydroLife,8.90,19.95,0.42,Active
+PROD002004,Smartphone Case Leather,ACCS004,PhoneGuard,15.25,34.99,0.12,Active
+PROD002005,Coffee Maker Automatic,APPL005,BrewMaster,78.40,159.00,2.85,Active
+PROD002006,Running Shoes Men,SHOE006,SportFlex,35.60,79.99,0.95,Active
+PROD002007,Laptop Stand Adjustable,DESK007,WorkSpace,22.30,49.95,1.20,Active
+PROD002008,Vitamin D3 Supplements,HEAL008,WellnessPro,6.75,15.99,0.08,Active
+PROD002009,Wireless Mouse Ergonomic,COMP009,TechPro,18.90,39.99,0.25,Active
+PROD002010,Kitchen Knife Set,KITC010,ChefMaster,42.50,89.99,1.50,Active
+PROD002011,Yoga Mat Premium,SPOR011,FlexFit,16.80,35.99,1.80,Active
+PROD002012,LED Desk Lamp,LIGH012,BrightWork,28.75,59.99,1.40,Active
+PROD002013,Protein Powder Vanilla,NUTR013,FitLife,24.90,49.99,1.20,Active
+PROD002014,Bluetooth Speaker Portable,AUDI014,SoundWave,32.40,69.99,0.65,Active
+PROD002015,Gaming Keyboard Mechanical,COMP015,GamePro,55.60,119.99,1.10,Active
+PROD002016,Electric Toothbrush,HEAL016,DentalCare,38.25,79.99,0.35,Active
+PROD002017,Backpack Waterproof,BAGS017,AdventurePack,29.90,65.99,0.85,Active
+PROD002018,Smart Watch Fitness,ELEC018,FitTracker,89.50,199.99,0.18,Active
+PROD002019,Air Purifier HEPA,HOME019,CleanAir,125.80,249.99,4.20,Active
+PROD002020,Sunglasses Polarized,ACCS020,SunShield,22.45,49.99,0.15,Active
+PROD002021,Ceramic Cookware Set,KITC021,CookMaster,68.90,149.99,3.50,Active
+PROD002022,Phone Charger Wireless,ELEC022,PowerCharge,14.75,29.99,0.22,Active
+PROD002023,Memory Foam Pillow,HOME023,RestWell,19.60,39.99,0.95,Active
+PROD002024,Fitness Tracker Band,SPOR024,ActiveLife,45.30,89.99,0.12,Active
+PROD002025,Digital Camera Compact,PHOT025,SnapPro,178.40,359.99,0.58,Active
+PROD002026,Hand Cream Moisturizing,BEAU026,SkinCare,4.85,12.99,0.05,Active
+PROD002027,Tablet Stand Adjustable,ACCS027,TabletPro,16.90,34.99,0.45,Active
+PROD002028,Green Tea Organic,FOOD028,TeaLeaf,8.25,18.99,0.15,Active
+PROD002029,Resistance Bands Set,SPOR029,StrengthFit,12.40,29.99,0.35,Active
+PROD002030,Aromatherapy Diffuser,HOME030,RelaxScent,35.70,75.99,1.25,Active
