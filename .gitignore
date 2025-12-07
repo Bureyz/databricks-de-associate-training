@@ -1,5 +1,6 @@
 # Training Plan - local reference only
 notebooks/TRAINING_PLAN.md
+_old/
 
 # Python
 __pycache__/

@@ -1,19 +1,33 @@
-Dzień 1 – Data Engineering for Machine Learning (pigułka)
-•	Wprowadzenie do platformy Databricks: przegląd architektury Lakehouse, workspace, klastry, notebooki, DBFS. 
-•	Ingest i podstawowe transformacje: 
-•	Tworzenie DataFrame’ów w SQL i PySpark; operacje select, filter, join, groupBy. 
-•	Ładowanie danych z różnych formatów (CSV, JSON, Parquet) oraz zapis/odczyt tabel Delta. 
-•	Zarządzanie schematem, ACID, time travel, MERGE, UPDATE i DELETE w Delta Lake. 
-•	Strumieniowe i incrementalne ładowanie danych: 
-•	Wprowadzenie do Auto Loader i cloudFiles do automatycznego wykrywania nowych plików i przetwarzania ich dokładnie raz. 
-•	Porównanie trybów „trigger once” i „continuous”; obsługa schema evolution i wielu formatów plików. 
-•	Structured Streaming: readStream / writeStream, checkpointing i fault tolerance. 
-•	Architektura Medallion i Lakeflow: 
-•	Omówienie koncepcji warstw Bronze, Silver, Gold i ich zastosowania w przygotowaniu danych. 
-•	Praca z Lakeflow – deklaratywne definiowanie tabel i widoków, tworzenie pipeline’u w GUI, ustalanie harmonogramów, oczekiwań jakości danych, monitoring i lineage. 
-•	Łączenie DLT z Auto Loader i Structured Streaming w jednym przepływie. 
-•	Orkiestracja zadań i governance: 
-•	Użycie Databricks Workflows do tworzenia zadań i multi task jobów. 
-•	Podstawy zarządzania dostępem i katalogiem danych w Unity Catalog. 
-- row lever security and data masking 
-•	Dobre praktyki wersjonowania kodu (Repos) i monitorowania wydajności (Spark UI). 
+1.Introduction to the Databricks platform: overview of Lakehouse architecture, workspace, clusters, notebooks, DBFS.
+
+2. Ingest and basic transformations:
+
+  - Creating DataFrames in SQL and PySpark; select, filter, join, groupBy operations.
+
+  - Loading data from CSV, JSON, Parquet formats and reading/writing Delta tables.
+
+  - Schema management, ACID, time travel, MERGE, UPDATE, DELETE in Delta Lake.
+
+3. Streaming and incremental data loading:
+
+  - Introduction to Auto Loader and cloudFiles for automatic detection of new files and exactly-once processing.
+
+  - Comparison of "trigger once" and "continuous" modes; schema evolution handling and multiple file formats.
+
+  - Structured Streaming: readStream / writeStream, checkpointing, fault tolerance.
+
+4.Medallion architecture and Delta Live Tables:
+
+  - Concept of Bronze, Silver, Gold layers and their application in data preparation.
+
+  - Working with Delta Live Tables – declarative table/view definitions, pipeline creation in GUI, scheduling, data quality expectations, monitoring, and lineage.
+
+  - Combining DLT with Auto Loader and Structured Streaming in one flow.
+
+5.Orchestration and governance:
+
+  - Using Databricks Workflows for jobs and multitask jobs.
+
+  - Basics of access management and Unity Catalog.
+
+  - Best practices for code versioning (Repos) and performance monitoring (Spark UI).
