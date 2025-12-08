@@ -20,7 +20,7 @@
 
   - Concept of Bronze, Silver, Gold layers and their application in data preparation.
 
-  - Working with Delta Live Tables – declarative table/view definitions, pipeline creation in GUI, scheduling, data quality expectations, monitoring, and lineage.
+  - Working with Delta Live Tables – declarative table/view P<definitions, pipeline creation in GUI, scheduling, data quality expectations, monitoring, and lineage.
 
   - Combining DLT with Auto Loader and Structured Streaming in one flow.
 
