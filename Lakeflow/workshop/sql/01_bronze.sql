@@ -15,6 +15,12 @@ COMMENT 'Raw products data from CSV'
 AS SELECT * FROM cloud_files('${source_path}/Product', 'csv', map("header", "true", "inferSchema", "true"));
 
 -- Bronze Orders
-CREATE OR REFRESH STREAMING TABLE bronze_orders
+CREATE OR REFRESH STREAMING TABLE bronze_orders_header
 COMMENT 'Raw orders data from CSV'
 AS SELECT * FROM cloud_files('${source_path}/SalesOrderHeader', 'csv', map("header", "true", "inferSchema", "true"));
+
+-- Bronze Orders
+CREATE OR REFRESH STREAMING TABLE bronze_orders_detail
+COMMENT 'Raw orders data from CSV'
+AS SELECT * FROM cloud_files('${source_path}/SalesOrderDetail', 'csv', map("header", "true", "inferSchema", "true"));
+
