@@ -1,0 +1,21 @@
+customer_id,first_name,last_name,email,phone,city,state,country,registration_date,customer_segment
+CUST000029,Magdalena,Kowalski,magdalena.kowalski@gmail.com,+48 567 890 123,Warsaw,Mazowieckie,Poland,2025-01-15,Premium
+CUST000030,Thomas,Anderson,thomas.anderson@hotmail.com,+1-555-123-4567,Los Angeles,CA,USA,2024-12-20,Standard
+CUST000031,Maria,Rodriguez,maria.rodriguez@yahoo.com,+34 612 345 678,Madrid,Madrid,Spain,2025-03-10,Basic
+CUST000032,James,Wilson,james.wilson@outlook.com,+44 20 7946 0958,London,London,UK,2024-11-05,Premium
+CUST000033,Anna,Nowak,anna.nowak@onet.pl,+48 601 234 567,Krakow,Malopolskie,Poland,2025-02-28,Standard
+CUST000034,Michael,Johnson,michael.johnson@gmail.com,+1-212-555-7890,New York,NY,USA,2024-09-14,Basic
+CUST000035,Sophie,Martin,sophie.martin@free.fr,+33 1 42 86 83 00,Paris,Ile-de-France,France,2025-04-18,Premium
+CUST000036,Piotr,Wiśniewski,piotr.wisniewski@wp.pl,+48 512 345 678,Gdansk,Pomorskie,Poland,2024-08-22,Standard
+CUST000037,Emma,Thompson,emma.thompson@gmail.co.uk,+44 161 496 0000,Manchester,Manchester,UK,2025-05-07,Basic
+CUST000038,Carlos,Garcia,carlos.garcia@hotmail.es,+34 91 123 4567,Barcelona,Cataluna,Spain,2024-10-30,Premium
+CUST000039,Katarzyna,Lewandowski,katarzyna.lewandowski@interia.pl,+48 789 012 345,Wroclaw,Dolnoslaskie,Poland,2025-01-12,Standard
+CUST000040,David,Brown,david.brown@yahoo.com,+1-415-555-0123,San Francisco,CA,USA,2024-12-03,Basic
+CUST000041,Isabella,Rossi,isabella.rossi@libero.it,+39 02 1234 5678,Milan,Lombardy,Italy,2025-06-15,Premium
+CUST000042,Robert,Davis,robert.davis@gmail.com,+1-312-555-9876,Chicago,IL,USA,2024-07-28,Standard
+CUST000043,Agnieszka,Kaminski,agnieszka.kaminski@gmail.com,+48 698 765 432,Poznan,Wielkopolskie,Poland,2025-03-22,Basic
+CUST000044,Oliver,Taylor,oliver.taylor@btinternet.com,+44 113 496 0000,Leeds,Yorkshire,UK,2024-11-17,Premium
+CUST000045,Lucia,Fernandez,lucia.fernandez@gmail.com,+34 93 123 4567,Valencia,Valencia,Spain,2025-02-08,Standard
+CUST000046,Adam,Zielinski,adam.zielinski@o2.pl,+48 534 567 890,Lublin,Lubelskie,Poland,2024-09-25,Basic
+CUST000047,Charlotte,Williams,charlotte.williams@outlook.com,+1-206-555-4321,Seattle,WA,USA,2025-01-30,Premium
+CUST000048,Marco,Bianchi,marco.bianchi@gmail.it,+39 06 1234 5678,Rome,Lazio,Italy,2024-12-14,Standard
