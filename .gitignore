@@ -4,6 +4,9 @@ notebooks/AGENDA.md
 _old/
 scripts/
 
+# Utilization - source files for PDF generation (not distributed)
+utilization/
+
 # Python
 __pycache__/
 *.py[cod]
