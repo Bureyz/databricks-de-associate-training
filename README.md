@@ -19,13 +19,13 @@ Training materials for the **Databricks Data Engineer Associate** certification 
 | # | Module | Path |
 |---|--------|------|
 | M01 | Platform & Workspace | `training_2026/day1/demo/M01_platform_workspace.ipynb` |
-| M02 | Ingestion & Transformations | `training_2026/day1/demo/M02_ingestion_transformations.ipynb` |
-| M03 | Delta Lake Fundamentals | `training_2026/day1/demo/M03_delta_lake.ipynb` |
-| M04 | Streaming & Incremental | `training_2026/day2/demo/M04_streaming_incremental.ipynb` |
-| M05 | Medallion & Lakeflow | `training_2026/day2/demo/M05_medallion_lakeflow.ipynb` |
-| M06 | Orchestration & Jobs | `training_2026/day2/demo/M06_orchestration.ipynb` |
-| M07 | Advanced Delta & Performance | `training_2026/day3/demo/M07_advanced_delta.ipynb` |
-| M08 | Exam Preparation & Labs | `training_2026/day3/demo/M08_exam_prep.ipynb` |
+| M02 | ELT & Ingestion | `training_2026/day1/demo/M02_elt_ingestion.ipynb` |
+| M03 | Delta Lake Fundamentals | `training_2026/day1/demo/M03_delta_fundamentals.ipynb` |
+| M04 | Delta Optimization | `training_2026/day2/demo/M04_delta_optimization.ipynb` |
+| M05 | Incremental Processing | `training_2026/day2/demo/M05_incremental_processing.ipynb` |
+| M06 | Advanced Transforms | `training_2026/day2/demo/M06_advanced_transforms.ipynb` |
+| M07 | Medallion & Lakeflow | `training_2026/day3/demo/M07_medallion_lakeflow.ipynb` |
+| M08 | Orchestration & Jobs | `training_2026/day3/demo/M08_orchestration.ipynb` |
 | M09 | Governance & Security | `training_2026/day3/demo/M09_governance.ipynb` |
 
 ## Labs
