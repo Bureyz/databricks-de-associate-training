@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title> </title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #333; line-height: 1.6; }
+  h1 { color: #1a73e8; border-bottom: 2px solid #1a73e8; padding-bottom: 8px; }
+  h2 { color: #2d2d2d; border-bottom: 1px solid #ddd; padding-bottom: 6px; margin-top: 30px; }
+  h3 { color: #444; margin-top: 20px; }
+  code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+  pre { background: #f5f5f5; padding: 16px; border-radius: 6px; overflow-x: auto; border: 1px solid #e0e0e0; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th, td { border: 1px solid #ddd; padding: 10px 14px; text-align: left; }
+  th { background: #f0f4ff; font-weight: 600; }
+  tr:nth-child(even) { background: #fafafa; }
+  blockquote { border-left: 4px solid #1a73e8; margin: 16px 0; padding: 10px 20px; background: #f0f4ff; }
+  .header { text-align: center; margin-bottom: 30px; padding: 20px; background: #f0f4ff; border-radius: 8px; }
+  .header h1 { border: none; margin: 0; }
+  .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #888; font-size: 0.85em; }
+  @media print { body { margin: 20px; } .header { page-break-after: avoid; } }
+</style>
+
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"> </h1>
+</header>
+<h1 id="lab-01-platform-workspace-setup">LAB 01: Platform &amp;
+Workspace Setup</h1>
+<p><strong>Duration:</strong> ~40 min<br />
+<strong>Day:</strong> 1<br />
+<strong>After module:</strong> M01: Platform &amp; Workspace<br />
+<strong>Difficulty:</strong> Beginner</p>
+<hr />
+<h2 id="scenario">Scenario</h2>
+<blockquote>
+<p><em>“It’s your first day on the RetailHub data team. Before you can
+start building the analytics platform, you need to set up your
+workspace: create a compute cluster, explore Unity Catalog, and upload
+the raw data files that will be used throughout the training.”</em></p>
+</blockquote>
+<hr />
+<h2 id="objectives">Objectives</h2>
+<p>After completing this lab you will be able to: - Create and configure
+a Databricks compute cluster - Navigate Unity Catalog hierarchy (Catalog
+&gt; Schema &gt; Table/Volume) - Create and use Unity Catalog Volumes
+for raw file storage<br />
+- Upload dataset files to a Volume - Run basic <code>dbutils</code>
+commands</p>
+<hr />
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Access to Databricks workspace (URL + credentials provided by
+trainer)</li>
+<li>Dataset files available in the Git repository (<code>dataset/</code>
+folder)</li>
+</ul>
+<hr />
+<h2 id="part-1-create-compute-cluster-10-min">Part 1: Create Compute
+Cluster (~10 min)</h2>
+<h3 id="step-1-navigate-to-compute">Step 1: Navigate to Compute</h3>
+<ol type="1">
+<li>In the left sidebar, click <strong>Compute</strong></li>
+<li>Click <strong>Create compute</strong></li>
+</ol>
+<p>&lt;screen = Databricks left sidebar with “Compute” menu item
+highlighted&gt;</p>
+<h3 id="step-2-configure-cluster">Step 2: Configure Cluster</h3>
+<p>Use the following settings:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cluster name</strong></td>
+<td><code>training_{your_name}</code></td>
+</tr>
+<tr>
+<td><strong>Policy</strong></td>
+<td>Personal Compute (or as provided by trainer)</td>
+</tr>
+<tr>
+<td><strong>Access mode</strong></td>
+<td>Single User</td>
+</tr>
+<tr>
+<td><strong>Databricks Runtime</strong></td>
+<td>Latest LTS (e.g., 15.4 LTS)</td>
+</tr>
+<tr>
+<td><strong>Node type</strong></td>
+<td>As provided by trainer</td>
+</tr>
+<tr>
+<td><strong>Terminate after</strong></td>
+<td>60 minutes of inactivity</td>
+</tr>
+</tbody>
+</table>
+<p>&lt;screen = Compute creation form with fields filled in as described
+above&gt;</p>
+<h3 id="step-3-start-the-cluster">Step 3: Start the Cluster</h3>
+<ol type="1">
+<li>Click <strong>Create compute</strong></li>
+<li>Wait for the cluster status to change to <strong>Running</strong>
+(green circle)</li>
+<li>This may take 2-5 minutes</li>
+</ol>
+<p>&lt;screen = Compute page showing cluster in “Running” state with
+green indicator&gt;</p>
+<blockquote>
+<p><strong>Exam Tip:</strong> Know the difference between
+<strong>All-Purpose clusters</strong> (interactive, development) and
+<strong>Job clusters</strong> (automated, ephemeral). Serverless compute
+is the default for SQL Warehouses and is becoming the default for
+notebooks.</p>
+</blockquote>
+<hr />
+<h2 id="part-2-explore-unity-catalog-10-min">Part 2: Explore Unity
+Catalog (~10 min)</h2>
+<h3 id="step-4-open-catalog-explorer">Step 4: Open Catalog Explorer</h3>
+<ol type="1">
+<li>In the left sidebar, click <strong>Catalog</strong></li>
+<li>You should see your catalog: <code>retailhub_{your_name}</code></li>
+</ol>
+<p>&lt;screen = Catalog Explorer showing the catalog tree with
+retailhub_username catalog expanded&gt;</p>
+<h3 id="step-5-explore-the-catalog-hierarchy">Step 5: Explore the
+Catalog Hierarchy</h3>
+<p>Navigate through the hierarchy:</p>
+<pre><code>retailhub_{your_name}          -- CATALOG (top-level namespace)
+  ├── bronze                   -- SCHEMA (database)
+  │     ├── (tables)           -- TABLES
+  │     └── (volumes)          -- VOLUMES
+  ├── silver                   -- SCHEMA
+  ├── gold                     -- SCHEMA
+  └── default                  -- SCHEMA (auto-created)</code></pre>
+<ol type="1">
+<li>Click on your catalog name to expand it</li>
+<li>Click on <code>bronze</code> schema</li>
+<li>Note the tabs: <strong>Tables</strong>, <strong>Volumes</strong>,
+<strong>Functions</strong></li>
+</ol>
+<p>&lt;screen = Catalog Explorer showing expanded catalog with
+bronze/silver/gold schemas visible&gt;</p>
+<blockquote>
+<p><strong>Exam Tip:</strong> Unity Catalog uses a <strong>3-level
+namespace</strong>: <code>catalog.schema.object</code>. Always use fully
+qualified names in production code.</p>
+</blockquote>
+<h3 id="step-6-create-a-volume">Step 6: Create a Volume</h3>
+<ol type="1">
+<li>Click on <code>default</code> schema</li>
+<li>Click <strong>Create</strong> &gt; <strong>Volume</strong></li>
+<li>Configure:
+<ul>
+<li><strong>Name:</strong> <code>datasets</code></li>
+<li><strong>Volume type:</strong> Managed</li>
+</ul></li>
+<li>Click <strong>Create</strong></li>
+</ol>
+<p>&lt;screen = Create Volume dialog with name “datasets” and type
+“Managed” selected&gt;</p>
+<blockquote>
+<p><strong>Exam Tip:</strong> <strong>Managed volumes</strong> store
+data in the metastore-managed location. <strong>External
+volumes</strong> point to existing cloud storage paths. Both are
+governed by Unity Catalog permissions.</p>
+</blockquote>
+<hr />
+<h2 id="part-3-explore-external-connections-5-min">Part 3: Explore
+External Connections (~5 min)</h2>
+<h3 id="step-7-navigate-to-external-data">Step 7: Navigate to External
+Data</h3>
+<ol type="1">
+<li>In the left sidebar, click <strong>Catalog</strong></li>
+<li>In the top navigation, click <strong>External Data</strong> (or look
+in the left panel under your catalog)</li>
+<li>Click <strong>Connections</strong></li>
+</ol>
+<p>&lt;screen = Catalog Explorer with “External Data” &gt; “Connections”
+view open&gt;</p>
+<h3 id="step-8-understand-external-connections">Step 8: Understand
+External Connections</h3>
+<p>External Connections define how Databricks connects to external data
+sources (cloud storage, databases, APIs).</p>
+<p>Review the Connections page and note: - A connection stores
+<strong>credentials</strong> and <strong>endpoint</strong> information -
+Connections are used by <strong>External Locations</strong> (cloud
+storage) and <strong>Foreign Connections</strong> (databases like
+PostgreSQL, MySQL, SQL Server) - To create a connection: <strong>Create
+connection</strong> &gt; choose type &gt; provide credentials</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Connection Type</th>
+<th>Use Case</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Storage</strong></td>
+<td>Access files on cloud storage</td>
+<td>S3 bucket, ADLS container, GCS bucket</td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>Query external databases via Lakehouse Federation</td>
+<td>PostgreSQL, MySQL, SQL Server</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> Creating actual connections requires cloud
+credentials. In this training, we explore the UI to understand the
+concept. Your trainer may demonstrate a live connection.</p>
+</blockquote>
+<blockquote>
+<p><strong>Exam Tip:</strong> External Connections are part of Unity
+Catalog governance. They require <code>CREATE CONNECTION</code>
+privilege and are managed at the <strong>metastore level</strong>. Know
+the difference between <strong>External Locations</strong> (storage
+paths) and <strong>Foreign Connections</strong> (database endpoints for
+Lakehouse Federation).</p>
+</blockquote>
+<hr />
+<h2 id="part-4-upload-dataset-files-10-min">Part 4: Upload Dataset Files
+(~10 min)</h2>
+<h3 id="step-9-upload-files-to-the-volume">Step 9: Upload Files to the
+Volume</h3>
+<ol type="1">
+<li>Navigate to <strong>Catalog</strong> &gt;
+<code>retailhub_{your_name}</code> &gt; <code>default</code> &gt;
+<strong>Volumes</strong> &gt; <code>datasets</code></li>
+<li>Click <strong>Upload to this volume</strong></li>
+<li>Upload the following files from the <code>dataset/</code> folder:
+<ul>
+<li><code>customers/customers.csv</code></li>
+<li><code>products/products.csv</code></li>
+<li><code>orders/orders_batch.json</code></li>
+</ul></li>
+</ol>
+<p>&lt;screen = Volume file browser showing uploaded CSV and JSON files
+with file sizes&gt;</p>
+<h3 id="step-10-verify-files-with-dbutils">Step 10: Verify Files with
+dbutils</h3>
+<p>Open the lab notebook (<code>LAB_01_code.ipynb</code>) and complete
+the tasks there.</p>
+<hr />
+<h2 id="part-5-notebook-tasks">Part 5: Notebook Tasks</h2>
+<p>Open <strong><code>LAB_01_code.ipynb</code></strong> and complete all
+<code># TODO</code> cells.</p>
+<p>Tasks in the notebook: 1. Run the setup cell
+(<code>%run ../setup/00_setup</code>) 2. List files in your Volume using
+<code>dbutils.fs.ls()</code> 3. Read the customers CSV using
+<code>spark.read</code> 4. Display the first 5 rows 5. Check the
+catalog/schema context with
+<code>SELECT current_catalog(), current_schema()</code></p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>In this lab you: - Created a compute cluster configured for the
+training - Explored the Unity Catalog 3-level namespace - Created a
+managed Volume for raw file storage - Uploaded dataset files and
+verified access via <code>dbutils</code></p>
+<blockquote>
+<p><strong>What’s next:</strong> In LAB 02 you will use these files to
+build your first ELT ingestion pipeline — reading CSV/JSON, transforming
+data, and writing Delta tables.</p>
+</blockquote>
+</body>
+</html>

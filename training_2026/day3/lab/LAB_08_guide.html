@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title> </title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #333; line-height: 1.6; }
+  h1 { color: #1a73e8; border-bottom: 2px solid #1a73e8; padding-bottom: 8px; }
+  h2 { color: #2d2d2d; border-bottom: 1px solid #ddd; padding-bottom: 6px; margin-top: 30px; }
+  h3 { color: #444; margin-top: 20px; }
+  code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+  pre { background: #f5f5f5; padding: 16px; border-radius: 6px; overflow-x: auto; border: 1px solid #e0e0e0; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th, td { border: 1px solid #ddd; padding: 10px 14px; text-align: left; }
+  th { background: #f0f4ff; font-weight: 600; }
+  tr:nth-child(even) { background: #fafafa; }
+  blockquote { border-left: 4px solid #1a73e8; margin: 16px 0; padding: 10px 20px; background: #f0f4ff; }
+  .header { text-align: center; margin-bottom: 30px; padding: 20px; background: #f0f4ff; border-radius: 8px; }
+  .header h1 { border: none; margin: 0; }
+  .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #888; font-size: 0.85em; }
+  @media print { body { margin: 20px; } .header { page-break-after: avoid; } }
+</style>
+
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title"> </h1>
+</header>
+<h1 id="lab-08-lakeflow-jobs-triggers-dependencies-orchestration">LAB
+08: Lakeflow Jobs – Triggers, Dependencies &amp; Orchestration</h1>
+<p><strong>Duration:</strong> ~30 min<br />
+<strong>Day:</strong> 3<br />
+<strong>After module:</strong> M08: Lakeflow Jobs &amp;
+Orchestration<br />
+<strong>Difficulty:</strong> Intermediate</p>
+<hr />
+<h2 id="scenario">Scenario</h2>
+<blockquote>
+<p><em>“The RetailHub Medallion pipeline (LAB 07) is running
+successfully on-demand. Now it’s time to automate it. The business
+requires: (1) daily scheduled refresh of the pipeline, (2) a validation
+task that runs AFTER the pipeline completes, (3) an email alert if any
+task fails. You will configure a multi-task Job with triggers and
+dependencies in the Databricks UI, then explore the configuration via
+notebook code.”</em></p>
+</blockquote>
+<hr />
+<h2 id="objectives">Objectives</h2>
+<p>After completing this lab you will be able to: - Create a multi-task
+Lakeflow Job with task dependencies - Configure different trigger types
+(scheduled/cron, file arrival, continuous) - Define task dependency
+chains (linear and fan-out/fan-in patterns) - Set up retry policies and
+failure notifications - Use <code>dbutils.jobs</code> to pass parameters
+between tasks - Query system tables to monitor job runs
+programmatically</p>
+<hr />
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Completed LAB 07 (Lakeflow Pipeline is created in workspace)</li>
+<li>Access to Databricks workspace with Job creation permissions</li>
+</ul>
+<hr />
+<h2 id="part-1-understanding-job-architecture-5-min">Part 1:
+Understanding Job Architecture (~5 min)</h2>
+<h3 id="task-1-review-job-components">Task 1: Review Job Components</h3>
+<p>Before creating a Job in the UI, review these key components:</p>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 32%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>Component</th>
+<th>Description</th>
+<th>Exam Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Task</strong></td>
+<td>A single unit of work (notebook, DLT pipeline, SQL, JAR, Python
+script)</td>
+<td>Know all task types</td>
+</tr>
+<tr>
+<td><strong>Dependency</strong></td>
+<td>Defines execution order between tasks (task B runs after task
+A)</td>
+<td>DAG structure</td>
+</tr>
+<tr>
+<td><strong>Trigger</strong></td>
+<td>When the job starts (manual, scheduled, file arrival,
+continuous)</td>
+<td>Trigger types and use cases</td>
+</tr>
+<tr>
+<td><strong>Cluster</strong></td>
+<td>Each task can use its own cluster or share one (job cluster vs
+all-purpose)</td>
+<td>Cost optimization</td>
+</tr>
+<tr>
+<td><strong>Retry Policy</strong></td>
+<td>How many times to retry a failed task before marking it as
+failed</td>
+<td>Resilience</td>
+</tr>
+<tr>
+<td><strong>Timeout</strong></td>
+<td>Maximum duration before a task is killed</td>
+<td>Resource protection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="job-dependency-patterns">Job Dependency Patterns</h3>
+<pre><code>LINEAR:                    FAN-OUT / FAN-IN:
+                          
+  ┌──────────┐               ┌──────────┐
+  │ Validate │               │ Ingest   │
+  └────┬─────┘               └──┬───┬───┘
+       │                        │   │
+  ┌────▼─────┐            ┌────▼┐ ┌▼────┐
+  │Transform │            │ DIM │ │FACT │
+  └────┬─────┘            └──┬──┘ └──┬──┘
+       │                     │       │
+  ┌────▼─────┐            ┌──▼──────▼──┐
+  │  Report  │            │   Report   │
+  └──────────┘            └────────────┘</code></pre>
+<blockquote>
+<p><strong>Exam Tip:</strong> In fan-out/fan-in pattern, the Report task
+has <strong>two dependencies</strong> (DIM and FACT). It starts only
+when <strong>both</strong> complete successfully. This is how Databricks
+handles parallel execution within jobs.</p>
+</blockquote>
+<hr />
+<h2 id="part-2-create-multi-task-job-in-ui-10-min">Part 2: Create
+Multi-Task Job in UI (~10 min)</h2>
+<h3 id="task-2-build-the-retailhub-daily-job">Task 2: Build the
+RetailHub Daily Job</h3>
+<p><strong>Open the Databricks UI and follow these steps:</strong></p>
+<ol type="1">
+<li><p><strong>Navigate:</strong> Workflows &gt; Jobs &gt; Create
+Job</p></li>
+<li><p><strong>Task 1 – Pipeline Refresh:</strong></p>
+<ul>
+<li>Task name: <code>refresh_pipeline</code></li>
+<li>Type: <strong>Lakeflow pipeline task</strong></li>
+<li>Pipeline: Select your RetailHub pipeline from LAB 07</li>
+<li>Cluster: Job cluster (Single Node, smallest available)</li>
+</ul></li>
+<li><p><strong>Task 2 – Validate Results:</strong></p>
+<ul>
+<li>Task name: <code>validate_results</code></li>
+<li>Type: <strong>Notebook task</strong></li>
+<li>Notebook: <code>task_01_validate.ipynb</code> (from the training
+setup)</li>
+<li><strong>Depends on:</strong> <code>refresh_pipeline</code></li>
+<li>Cluster: Same job cluster</li>
+</ul></li>
+<li><p><strong>Task 3 – Generate Report:</strong></p>
+<ul>
+<li>Task name: <code>generate_report</code></li>
+<li>Type: <strong>Notebook task</strong></li>
+<li>Notebook: <code>task_03_report.ipynb</code></li>
+<li><strong>Depends on:</strong> <code>validate_results</code></li>
+<li>Cluster: Same job cluster</li>
+</ul></li>
+</ol>
+<blockquote>
+<p><strong>Exam Tip:</strong> A <strong>Job cluster</strong> is created
+when the Job starts and terminated when it ends. It’s cheaper than an
+all-purpose cluster for scheduled jobs. Multiple tasks can share the
+same Job cluster.</p>
+</blockquote>
+<hr />
+<h2 id="part-3-configure-triggers-5-min">Part 3: Configure Triggers (~5
+min)</h2>
+<h3 id="task-3-set-up-scheduled-trigger">Task 3: Set Up Scheduled
+Trigger</h3>
+<p>Configure a CRON-based trigger for daily execution:</p>
+<ol type="1">
+<li>In Job settings, click <strong>Add trigger</strong></li>
+<li>Select <strong>Scheduled</strong></li>
+<li>Set the CRON expression: <code>0 6 * * *</code> (daily at 06:00
+UTC)</li>
+<li>Timezone: Select your timezone</li>
+</ol>
+<p><strong>Common CRON patterns for reference:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>CRON Expression</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every day at 6 AM</td>
+<td><code>0 6 * * *</code></td>
+<td>Daily batch refresh</td>
+</tr>
+<tr>
+<td>Every hour</td>
+<td><code>0 * * * *</code></td>
+<td>Near-real-time updates</td>
+</tr>
+<tr>
+<td>Mon-Fri at 8 AM</td>
+<td><code>0 8 * * 1-5</code></td>
+<td>Business day reports</td>
+</tr>
+<tr>
+<td>Every 15 min</td>
+<td><code>*/15 * * * *</code></td>
+<td>Frequent incremental loads</td>
+</tr>
+<tr>
+<td>First day of month</td>
+<td><code>0 0 1 * *</code></td>
+<td>Monthly aggregations</td>
+</tr>
+</tbody>
+</table>
+<h3 id="task-4-explore-other-trigger-types">Task 4: Explore Other
+Trigger Types</h3>
+<p>Review (do NOT configure) these additional trigger types:</p>
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 30%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr>
+<th>Trigger Type</th>
+<th>When to Use</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Manual</strong></td>
+<td>Ad-hoc runs, testing</td>
+<td>Default, no trigger needed</td>
+</tr>
+<tr>
+<td><strong>Scheduled (CRON)</strong></td>
+<td>Regular batch processing</td>
+<td>CRON expression + timezone</td>
+</tr>
+<tr>
+<td><strong>File arrival</strong></td>
+<td>Event-driven: run when new files land in a Volume/cloud path</td>
+<td>Path to monitor + wait time</td>
+</tr>
+<tr>
+<td><strong>Continuous</strong></td>
+<td>Always-on processing, minimal latency</td>
+<td>Restart on completion, with optional pause</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Exam Tip:</strong> <strong>File arrival trigger</strong>
+monitors a cloud storage path. When new files appear, the job starts.
+This is ideal for event-driven architectures. The trigger checks for
+files at configurable intervals (default: 5 min). Continuous trigger
+restarts the job immediately after completion – used for streaming-like
+behavior with notebook tasks.</p>
+</blockquote>
+<hr />
+<h2 id="part-4-dependencies-error-handling-5-min">Part 4: Dependencies
+&amp; Error Handling (~5 min)</h2>
+<h3 id="task-5-configure-retry-and-alerting">Task 5: Configure Retry and
+Alerting</h3>
+<p>In the Job settings:</p>
+<ol type="1">
+<li><strong>Retry Policy:</strong>
+<ul>
+<li>For <code>validate_results</code> task: Set max retries to
+<strong>2</strong>, retry interval <strong>60 seconds</strong></li>
+<li>Rationale: Validation may fail due to transient Delta table
+issues</li>
+</ul></li>
+<li><strong>Timeout:</strong>
+<ul>
+<li>Set <code>refresh_pipeline</code> timeout to <strong>30
+minutes</strong></li>
+<li>If the pipeline doesn’t finish in 30 min, something is wrong</li>
+</ul></li>
+<li><strong>Notifications (Email/Webhook):</strong>
+<ul>
+<li>Add notification on <strong>Failure</strong>: Your email</li>
+<li>Add notification on <strong>Success</strong>: Optional (for
+monitoring)</li>
+</ul></li>
+</ol>
+<h3 id="task-6-test-run-and-repair">Task 6: Test Run and Repair</h3>
+<ol type="1">
+<li><strong>Run the Job manually</strong> (click “Run now”)</li>
+<li><strong>Observe the DAG</strong> in the Runs tab – watch tasks
+execute in dependency order</li>
+<li>If a task fails:
+<ul>
+<li>Click the failed run</li>
+<li>Click <strong>Repair run</strong> – this re-runs ONLY the failed
+task and downstream dependencies</li>
+<li>Saves time vs. re-running the entire job</li>
+</ul></li>
+</ol>
+<blockquote>
+<p><strong>Exam Tip:</strong> <strong>Repair run</strong> is a key exam
+concept. It re-executes only failed and downstream tasks, preserving
+successful results. This is critical for long-running pipelines where
+re-running everything would be wasteful.</p>
+</blockquote>
+<hr />
+<h2 id="part-5-programmatic-job-monitoring-5-min">Part 5: Programmatic
+Job Monitoring (~5 min)</h2>
+<h3 id="task-7-query-system-tables">Task 7: Query System Tables</h3>
+<p>Open <code>LAB_08_code.ipynb</code> and complete the tasks there. You
+will: - Query <code>system.lakeflow.job_run_timeline</code> to see job
+execution history - Query
+<code>system.lakeflow.job_task_run_timeline</code> for task-level
+details - Analyze job duration trends and failure rates - Use
+<code>dbutils.jobs.taskValues</code> to pass data between tasks</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>After completing this lab you have: - Created a multi-task Job with
+linear task dependencies - Configured a CRON scheduled trigger for daily
+execution - Understood file arrival and continuous trigger types - Set
+up retry policies and email notifications - Used Repair Run to
+re-execute failed tasks efficiently - Queried system tables for job
+monitoring</p>
+<hr />
+<h2 id="whats-next-lab-09">What’s next: LAB 09</h2>
+<p>Next you will apply governance and security controls: permissions,
+row filters, column masking, and Delta Sharing.</p>
+<hr />
+<h2 id="instructions">Instructions</h2>
+<p>Open <strong><code>LAB_08_code.ipynb</code></strong> and complete all
+<code># TODO</code> cells.<br />
+Each task has an <code>assert</code> cell to verify your solution.</p>
+</body>
+</html>
