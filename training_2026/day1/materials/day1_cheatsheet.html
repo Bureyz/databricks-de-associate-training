@@ -313,25 +313,125 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a hr
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .option(<span class="st">&quot;inferSchema&quot;</span>, <span class="st">&quot;true&quot;</span>) <span class="op">\</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    .load(<span class="st">&quot;/path/to.csv&quot;</span>)</span></code></pre></div>
 <hr />
-<h2 id="creating-tables-ctas">Creating Tables (CTAS)</h2>
+<h2 id="creating-tables">Creating Tables</h2>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> catalog.<span class="kw">schema</span>.my_table</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">AS</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> read_files(<span class="st">&#39;/path&#39;</span>, format <span class="op">=&gt;</span> <span class="st">&#39;csv&#39;</span>, <span class="kw">header</span> <span class="op">=&gt;</span> <span class="st">&#39;true&#39;</span>);</span></code></pre></div>
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Managed table (data managed by Unity Catalog)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> catalog.<span class="kw">schema</span>.my_table</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">AS</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> read_files(<span class="st">&#39;/path&#39;</span>, format <span class="op">=&gt;</span> <span class="st">&#39;csv&#39;</span>, <span class="kw">header</span> <span class="op">=&gt;</span> <span class="st">&#39;true&#39;</span>);</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- External table (data at external location, survives DROP)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> catalog.<span class="kw">schema</span>.ext_table</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>LOCATION <span class="st">&#39;s3://bucket/path&#39;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">AS</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> read_files(<span class="st">&#39;/path&#39;</span>, format <span class="op">=&gt;</span> <span class="st">&#39;csv&#39;</span>, <span class="kw">header</span> <span class="op">=&gt;</span> <span class="st">&#39;true&#39;</span>);</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Managed Table</th>
+<th>External Table</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data location</td>
+<td>Controlled by UC</td>
+<td>User-specified LOCATION</td>
+</tr>
+<tr>
+<td>DROP TABLE</td>
+<td>Deletes metadata + data</td>
+<td>Deletes metadata ONLY</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Most use cases</td>
+<td>Shared storage, legacy data</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="schema-evolution">Schema Evolution</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Auto-merge new columns during write</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(df.writeStream</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .option(<span class="st">&quot;mergeSchema&quot;</span>, <span class="st">&quot;true&quot;</span>)   <span class="co"># add new columns</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    .toTable(<span class="st">&quot;target&quot;</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Overwrite entire schema (replace all columns)</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>(df.write.mode(<span class="st">&quot;overwrite&quot;</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    .option(<span class="st">&quot;overwriteSchema&quot;</span>, <span class="st">&quot;true&quot;</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    .saveAsTable(<span class="st">&quot;target&quot;</span>))</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mergeSchema</code></td>
+<td>Adds new columns, keeps existing</td>
+</tr>
+<tr>
+<td><code>overwriteSchema</code></td>
+<td>Replaces schema entirely</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="magic-commands">Magic Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%sql</code></td>
+<td>Run SQL in Python notebook</td>
+<td><code>%sql SELECT * FROM t</code></td>
+</tr>
+<tr>
+<td><code>%python</code></td>
+<td>Run Python in SQL notebook</td>
+<td><code>%python print("hello")</code></td>
+</tr>
+<tr>
+<td><code>%run</code></td>
+<td>Execute another notebook</td>
+<td><code>%run ./setup_notebook</code></td>
+</tr>
+<tr>
+<td><code>%pip</code></td>
+<td>Install Python packages</td>
+<td><code>%pip install pandas</code></td>
+</tr>
+<tr>
+<td><code>%fs</code></td>
+<td>DBFS file operations</td>
+<td><code>%fs ls /Volumes/...</code></td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="temp-views-sql">Temp Views &amp; SQL</h2>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df.createOrReplaceTempView(<span class="st">&quot;my_view&quot;</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> spark.sql(<span class="st">&quot;SELECT * FROM my_view WHERE col &gt; 10&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df.createOrReplaceTempView(<span class="st">&quot;my_view&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> spark.sql(<span class="st">&quot;SELECT * FROM my_view WHERE col &gt; 10&quot;</span>)</span></code></pre></div>
 <hr />
 <h2 id="common-transformations">Common Transformations</h2>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df.select(<span class="st">&quot;col1&quot;</span>, <span class="st">&quot;col2&quot;</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df.<span class="bu">filter</span>(col(<span class="st">&quot;price&quot;</span>) <span class="op">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df.withColumn(<span class="st">&quot;total&quot;</span>, col(<span class="st">&quot;qty&quot;</span>) <span class="op">*</span> col(<span class="st">&quot;price&quot;</span>))</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>df.withColumnRenamed(<span class="st">&quot;old&quot;</span>, <span class="st">&quot;new&quot;</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>df.drop(<span class="st">&quot;unwanted_col&quot;</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>df.dropDuplicates([<span class="st">&quot;id&quot;</span>])</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df.na.fill({<span class="st">&quot;col&quot;</span>: <span class="st">&quot;default&quot;</span>})</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df.select(<span class="st">&quot;col1&quot;</span>, <span class="st">&quot;col2&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df.<span class="bu">filter</span>(col(<span class="st">&quot;price&quot;</span>) <span class="op">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df.withColumn(<span class="st">&quot;total&quot;</span>, col(<span class="st">&quot;qty&quot;</span>) <span class="op">*</span> col(<span class="st">&quot;price&quot;</span>))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>df.withColumnRenamed(<span class="st">&quot;old&quot;</span>, <span class="st">&quot;new&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>df.drop(<span class="st">&quot;unwanted_col&quot;</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>df.dropDuplicates([<span class="st">&quot;id&quot;</span>])</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>df.na.fill({<span class="st">&quot;col&quot;</span>: <span class="st">&quot;default&quot;</span>})</span></code></pre></div>
 <hr />
 <h2 id="delta-lake-basics">Delta Lake Basics</h2>
 <ul>
@@ -341,11 +441,11 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a hr
 <li><strong>Default:</strong> All tables in Databricks are Delta by
 default</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>DESCRIBE HISTORY my_table;</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> my_table VERSION <span class="kw">AS</span> <span class="kw">OF</span> <span class="dv">3</span>;</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> my_table <span class="dt">TIMESTAMP</span> <span class="kw">AS</span> <span class="kw">OF</span> <span class="st">&#39;2025-01-01&#39;</span>;</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>RESTORE <span class="kw">TABLE</span> my_table <span class="kw">TO</span> VERSION <span class="kw">AS</span> <span class="kw">OF</span> <span class="dv">3</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>DESCRIBE HISTORY my_table;</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> my_table VERSION <span class="kw">AS</span> <span class="kw">OF</span> <span class="dv">3</span>;</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> my_table <span class="dt">TIMESTAMP</span> <span class="kw">AS</span> <span class="kw">OF</span> <span class="st">&#39;2025-01-01&#39;</span>;</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>RESTORE <span class="kw">TABLE</span> my_table <span class="kw">TO</span> VERSION <span class="kw">AS</span> <span class="kw">OF</span> <span class="dv">3</span>;</span></code></pre></div>
 <hr />
 <h2 id="key-exam-points">Key Exam Points</h2>
 <ul>
@@ -356,6 +456,13 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#c
 <li>External table: data survives DROP</li>
 <li>Volumes: manage non-tabular files (CSV, JSON, images)</li>
 <li>Delta transaction log: one JSON file per commit</li>
+<li><code>mergeSchema</code> = additive (new columns);
+<code>overwriteSchema</code> = destructive (replace)</li>
+<li><code>%run</code> executes another notebook in same context (shares
+variables)</li>
+<li>ELT = Extract → Load raw → Transform in-place (Databricks
+model)</li>
+<li>ETL = Extract → Transform outside → Load (traditional)</li>
 </ul>
 </body>
 </html>

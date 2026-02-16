@@ -375,12 +375,86 @@ MATERIALIZED VIEW</h2>
 </tbody>
 </table>
 <hr />
+<h2 id="apply-changes-scd-change-data-capture">APPLY CHANGES (SCD /
+Change Data Capture)</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- SCD Type 1 (overwrite) — default</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REFRESH</span> STREAMING <span class="kw">TABLE</span> silver_customers;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>APPLY CHANGES <span class="kw">INTO</span> LIVE.silver_customers</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> STREAM(LIVE.bronze_customers)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>KEYS (customer_id)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SEQUENCE</span> <span class="kw">BY</span> updated_at</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">COLUMNS</span> <span class="op">*</span> <span class="kw">EXCEPT</span> (_rescued_data)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>STORED <span class="kw">AS</span> SCD <span class="kw">TYPE</span> <span class="dv">1</span>;  <span class="co">-- keeps only latest version</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- SCD Type 2 (history tracking)</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>APPLY CHANGES <span class="kw">INTO</span> LIVE.dim_customers</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> STREAM(LIVE.bronze_customers)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>KEYS (customer_id)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">SEQUENCE</span> <span class="kw">BY</span> updated_at</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>STORED <span class="kw">AS</span> SCD <span class="kw">TYPE</span> <span class="dv">2</span>;  <span class="co">-- adds __START_AT, __END_AT columns</span></span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>SCD Type</th>
+<th>Behavior</th>
+<th>History</th>
+<th>Extra Columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type 1</td>
+<td>Overwrite (upsert)</td>
+<td>No</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Type 2</td>
+<td>Track all changes</td>
+<td>Yes</td>
+<td><code>__START_AT</code>, <code>__END_AT</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="flow-multi-source-append">FLOW (Multi-Source Append)</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Append data from multiple sources into one table</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REFRESH</span> STREAMING <span class="kw">TABLE</span> all_orders;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> FLOW append_region_eu</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">AS</span> <span class="kw">INSERT</span> <span class="kw">INTO</span> LIVE.all_orders</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> STREAM(LIVE.bronze_eu_orders);</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> FLOW append_region_us</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">AS</span> <span class="kw">INSERT</span> <span class="kw">INTO</span> LIVE.all_orders</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> STREAM(LIVE.bronze_us_orders);</span></code></pre></div>
+<hr />
+<h2 id="delta-sharing">Delta Sharing</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Create share</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">SHARE</span> my_share;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">SHARE</span> my_share <span class="kw">ADD</span> <span class="kw">TABLE</span> catalog.<span class="kw">schema</span>.gold_report;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- Create recipient</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> RECIPIENT partner_org;</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- Grant access</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">SHARE</span> my_share <span class="kw">TO</span> RECIPIENT partner_org;</span></code></pre></div>
+<ul>
+<li>Open protocol (cross-platform, any client)</li>
+<li>Recipient gets read-only, live access</li>
+<li>No data copy — shared in place</li>
+</ul>
+<hr />
 <h2 id="event-log-data-quality-metrics">Event Log (Data Quality
 Metrics)</h2>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="dt">timestamp</span>, details<span class="ch">:flow_progress:data_quality:expectations</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> event_log(<span class="kw">TABLE</span>(catalog.<span class="kw">schema</span>.silver_orders))</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> details<span class="ch">:flow_progress:data_quality</span> <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="dt">timestamp</span>, details<span class="ch">:flow_progress:data_quality:expectations</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> event_log(<span class="kw">TABLE</span>(catalog.<span class="kw">schema</span>.silver_orders))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> details<span class="ch">:flow_progress:data_quality</span> <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span>;</span></code></pre></div>
 <hr />
 <h2 id="databricks-workflows-jobs">Databricks Workflows (Jobs)</h2>
 <pre><code>Job
@@ -389,13 +463,13 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#c
   ├── Task 2 (depends on Task 1)
   │     └── taskValues.get(&quot;Task_1&quot;, &quot;key&quot;)
   └── Task 3 (depends on Task 2)</code></pre>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pass values between tasks</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>dbutils.jobs.taskValues.<span class="bu">set</span>(key<span class="op">=</span><span class="st">&quot;row_count&quot;</span>, value<span class="op">=</span><span class="dv">1000</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve in downstream task</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>count <span class="op">=</span> dbutils.jobs.taskValues.get(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    taskKey<span class="op">=</span><span class="st">&quot;upstream_task&quot;</span>, key<span class="op">=</span><span class="st">&quot;row_count&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pass values between tasks</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dbutils.jobs.taskValues.<span class="bu">set</span>(key<span class="op">=</span><span class="st">&quot;row_count&quot;</span>, value<span class="op">=</span><span class="dv">1000</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve in downstream task</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>count <span class="op">=</span> dbutils.jobs.taskValues.get(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    taskKey<span class="op">=</span><span class="st">&quot;upstream_task&quot;</span>, key<span class="op">=</span><span class="st">&quot;row_count&quot;</span>)</span></code></pre></div>
 <hr />
 <h2 id="orchestration-patterns">Orchestration Patterns</h2>
 <table>
@@ -430,46 +504,100 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a hr
 </table>
 <hr />
 <h2 id="governance-grant-revoke">Governance: GRANT / REVOKE</h2>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Grant read access</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USE</span> CATALOG <span class="kw">ON</span> CATALOG my_catalog <span class="kw">TO</span> `analysts`;</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USE</span> <span class="kw">SCHEMA</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> my_catalog.silver <span class="kw">TO</span> `analysts`;</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> my_catalog.silver <span class="kw">TO</span> `analysts`;</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- Revoke</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">REVOKE</span> <span class="kw">MODIFY</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> my_catalog.bronze <span class="kw">FROM</span> `analysts`;</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Grant read access</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USE</span> CATALOG <span class="kw">ON</span> CATALOG my_catalog <span class="kw">TO</span> `analysts`;</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USE</span> <span class="kw">SCHEMA</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> my_catalog.silver <span class="kw">TO</span> `analysts`;</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> my_catalog.silver <span class="kw">TO</span> `analysts`;</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- Revoke</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">REVOKE</span> <span class="kw">MODIFY</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> my_catalog.bronze <span class="kw">FROM</span> `analysts`;</span></code></pre></div>
+<hr />
+<h2 id="views-comparison">Views Comparison</h2>
+<table>
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 20%" />
+<col style="width: 33%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Temp View</th>
+<th>Global Temp View</th>
+<th>Permanent View</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scope</td>
+<td>Session only</td>
+<td>All sessions (cluster)</td>
+<td>Persistent (UC)</td>
+</tr>
+<tr>
+<td>SQL prefix</td>
+<td><code>view_name</code></td>
+<td><code>global_temp.view_name</code></td>
+<td><code>catalog.schema.view</code></td>
+</tr>
+<tr>
+<td>Survives restart?</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Data stored?</td>
+<td>No (query only)</td>
+<td>No (query only)</td>
+<td>No (query only)</td>
+</tr>
+<tr>
+<td>Governance (UC)</td>
+<td>No</td>
+<td>No</td>
+<td>Yes (GRANT/REVOKE)</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> TEMP <span class="kw">VIEW</span> my_temp <span class="kw">AS</span> <span class="kw">SELECT</span> <span class="op">..</span>.;</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> <span class="kw">GLOBAL</span> TEMP <span class="kw">VIEW</span> my_global <span class="kw">AS</span> <span class="kw">SELECT</span> <span class="op">..</span>.;</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> <span class="kw">VIEW</span> catalog.<span class="kw">schema</span>.my_perm <span class="kw">AS</span> <span class="kw">SELECT</span> <span class="op">..</span>.;</span></code></pre></div>
 <hr />
 <h2 id="row-filters-column-masks">Row Filters &amp; Column Masks</h2>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Row Filter: restrict visible rows</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">FUNCTION</span> <span class="kw">schema</span>.row_filter(store_id STRING)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">RETURN</span> <span class="cf">IF</span>(is_account_group_member(<span class="st">&#39;admins&#39;</span>), <span class="kw">true</span>, </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>          store_id <span class="op">=</span> current_user());</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> t <span class="kw">SET</span> <span class="kw">ROW</span> <span class="kw">FILTER</span> <span class="kw">schema</span>.row_filter <span class="kw">ON</span> (store_id);</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> t <span class="kw">DROP</span> <span class="kw">ROW</span> <span class="kw">FILTER</span>;  <span class="co">-- remove</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- Column Mask: redact sensitive data</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">FUNCTION</span> <span class="kw">schema</span>.mask_email(email STRING)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="kw">RETURN</span> <span class="cf">IF</span>(is_account_group_member(<span class="st">&#39;admins&#39;</span>), email, </span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>          <span class="fu">CONCAT</span>(<span class="st">&#39;***@&#39;</span>, SUBSTRING_INDEX(email, <span class="st">&#39;@&#39;</span>, <span class="op">-</span><span class="dv">1</span>)));</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> t <span class="kw">ALTER</span> <span class="kw">COLUMN</span> email <span class="kw">SET</span> MASK <span class="kw">schema</span>.mask_email;</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> t <span class="kw">ALTER</span> <span class="kw">COLUMN</span> email <span class="kw">DROP</span> MASK;  <span class="co">-- remove</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Row Filter: restrict visible rows</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">FUNCTION</span> <span class="kw">schema</span>.row_filter(store_id STRING)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">RETURN</span> <span class="cf">IF</span>(is_account_group_member(<span class="st">&#39;admins&#39;</span>), <span class="kw">true</span>, </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>          store_id <span class="op">=</span> current_user());</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> t <span class="kw">SET</span> <span class="kw">ROW</span> <span class="kw">FILTER</span> <span class="kw">schema</span>.row_filter <span class="kw">ON</span> (store_id);</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> t <span class="kw">DROP</span> <span class="kw">ROW</span> <span class="kw">FILTER</span>;  <span class="co">-- remove</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- Column Mask: redact sensitive data</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">FUNCTION</span> <span class="kw">schema</span>.mask_email(email STRING)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="kw">RETURN</span> <span class="cf">IF</span>(is_account_group_member(<span class="st">&#39;admins&#39;</span>), email, </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>          <span class="fu">CONCAT</span>(<span class="st">&#39;***@&#39;</span>, SUBSTRING_INDEX(email, <span class="st">&#39;@&#39;</span>, <span class="op">-</span><span class="dv">1</span>)));</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> t <span class="kw">ALTER</span> <span class="kw">COLUMN</span> email <span class="kw">SET</span> MASK <span class="kw">schema</span>.mask_email;</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> t <span class="kw">ALTER</span> <span class="kw">COLUMN</span> email <span class="kw">DROP</span> MASK;  <span class="co">-- remove</span></span></code></pre></div>
 <hr />
 <h2 id="information_schema">INFORMATION_SCHEMA</h2>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- List all tables</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> table_schema, table_name, table_type</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> catalog.INFORMATION_SCHEMA.<span class="kw">TABLES</span>;</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- List columns</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> column_name, data_type, ordinal_position</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> catalog.INFORMATION_SCHEMA.<span class="kw">COLUMNS</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> table_name <span class="op">=</span> <span class="st">&#39;my_table&#39;</span>;</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- List privileges</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> catalog.INFORMATION_SCHEMA.TABLE_PRIVILEGES;</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- List all tables</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> table_schema, table_name, table_type</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> catalog.INFORMATION_SCHEMA.<span class="kw">TABLES</span>;</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- List columns</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> column_name, data_type, ordinal_position</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> catalog.INFORMATION_SCHEMA.<span class="kw">COLUMNS</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> table_name <span class="op">=</span> <span class="st">&#39;my_table&#39;</span>;</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- List privileges</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> catalog.INFORMATION_SCHEMA.TABLE_PRIVILEGES;</span></code></pre></div>
 <hr />
 <h2 id="monitoring-observability-system-tables">Monitoring &amp;
 Observability (System Tables)</h2>
@@ -527,30 +655,30 @@ Observability (System Tables)</h2>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Daily DBU cost by SKU (last 30 days)</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> usage_date, sku_name, </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">ROUND</span>(<span class="fu">SUM</span>(usage_quantity), <span class="dv">2</span>) <span class="kw">as</span> total_dbus</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="kw">system</span>.billing.<span class="kw">usage</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> usage_date <span class="op">&gt;=</span> <span class="fu">current_date</span>() <span class="op">-</span> <span class="dt">INTERVAL</span> <span class="dv">30</span> DAYS</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> usage_date, sku_name</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> usage_date <span class="kw">DESC</span>;</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- Failed jobs (last 24h)</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> job_name, result_state, </span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>       period.start_time, error_message</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="kw">system</span>.lakeflow.job_run_timeline</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> period.start_time <span class="op">&gt;=</span> <span class="fu">current_timestamp</span>() <span class="op">-</span> <span class="dt">INTERVAL</span> <span class="dv">24</span> HOURS</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">AND</span> result_state <span class="op">!=</span> <span class="st">&#39;SUCCESS&#39;</span>;</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- Slowest queries (&gt; 60s, last 7 days)</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> executed_by, </span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>       SUBSTRING(statement_text, <span class="dv">1</span>, <span class="dv">100</span>) <span class="kw">as</span> <span class="kw">query</span>,</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>       <span class="fu">ROUND</span>(total_duration_ms <span class="op">/</span> <span class="dv">1000</span>, <span class="dv">1</span>) <span class="kw">as</span> seconds</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="kw">system</span>.<span class="kw">query</span>.history</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> start_time <span class="op">&gt;=</span> <span class="fu">current_timestamp</span>() <span class="op">-</span> <span class="dt">INTERVAL</span> <span class="dv">7</span> DAYS</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="kw">AND</span> total_duration_ms <span class="op">&gt;</span> <span class="dv">60000</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> total_duration_ms <span class="kw">DESC</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Daily DBU cost by SKU (last 30 days)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> usage_date, sku_name, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">ROUND</span>(<span class="fu">SUM</span>(usage_quantity), <span class="dv">2</span>) <span class="kw">as</span> total_dbus</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="kw">system</span>.billing.<span class="kw">usage</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> usage_date <span class="op">&gt;=</span> <span class="fu">current_date</span>() <span class="op">-</span> <span class="dt">INTERVAL</span> <span class="dv">30</span> DAYS</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> usage_date, sku_name</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> usage_date <span class="kw">DESC</span>;</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- Failed jobs (last 24h)</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> job_name, result_state, </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>       period.start_time, error_message</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="kw">system</span>.lakeflow.job_run_timeline</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> period.start_time <span class="op">&gt;=</span> <span class="fu">current_timestamp</span>() <span class="op">-</span> <span class="dt">INTERVAL</span> <span class="dv">24</span> HOURS</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">AND</span> result_state <span class="op">!=</span> <span class="st">&#39;SUCCESS&#39;</span>;</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- Slowest queries (&gt; 60s, last 7 days)</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> executed_by, </span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>       SUBSTRING(statement_text, <span class="dv">1</span>, <span class="dv">100</span>) <span class="kw">as</span> <span class="kw">query</span>,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>       <span class="fu">ROUND</span>(total_duration_ms <span class="op">/</span> <span class="dv">1000</span>, <span class="dv">1</span>) <span class="kw">as</span> seconds</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="kw">system</span>.<span class="kw">query</span>.history</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> start_time <span class="op">&gt;=</span> <span class="fu">current_timestamp</span>() <span class="op">-</span> <span class="dt">INTERVAL</span> <span class="dv">7</span> DAYS</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="kw">AND</span> total_duration_ms <span class="op">&gt;</span> <span class="dv">60000</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> total_duration_ms <span class="kw">DESC</span>;</span></code></pre></div>
 <hr />
 <h2 id="key-exam-points">Key Exam Points</h2>
 <ul>
@@ -567,6 +695,14 @@ abort pipeline</li>
 <li><code>is_account_group_member()</code> = dynamic security
 function</li>
 <li><code>INFORMATION_SCHEMA</code> = metadata audit (read-only)</li>
+<li><code>APPLY CHANGES</code> = Lakeflow CDC (SCD Type 1 or 2)</li>
+<li>SCD Type 2 adds <code>__START_AT</code> and <code>__END_AT</code>
+columns</li>
+<li><code>FLOW</code> = append from multiple sources into one streaming
+table</li>
+<li>Delta Sharing = open protocol, no data copy, read-only</li>
+<li>Temp View dies with session; Global Temp dies with cluster</li>
+<li>Permanent View = stored in Unity Catalog, has governance</li>
 <li><code>system.billing.usage</code> = DBU cost tracking</li>
 <li><code>system.access.audit</code> = security audit log
 (who/what/when)</li>

@@ -305,10 +305,143 @@ ingestion)</h2>
 class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> <span class="kw">INTO</span> catalog.<span class="kw">schema</span>.target</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="st">&#39;/source/path&#39;</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>FILEFORMAT <span class="op">=</span> JSON;</span></code></pre></div>
+<hr />
+<h2 id="copy-into-vs-auto-loader">COPY INTO vs Auto Loader</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>COPY INTO</th>
+<th>Auto Loader (cloudFiles)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language</td>
+<td>SQL</td>
+<td>Python (PySpark)</td>
+</tr>
+<tr>
+<td>Scale</td>
+<td>Thousands of files</td>
+<td>Millions+ of files</td>
+</tr>
+<tr>
+<td>Schema evolution</td>
+<td>Manual</td>
+<td>Automatic (<code>schemaLocation</code>)</td>
+</tr>
+<tr>
+<td>File tracking</td>
+<td>SQL-state based</td>
+<td>Checkpoint-based</td>
+</tr>
+<tr>
+<td>Idempotent</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Simple SQL pipelines</td>
+<td>Production streaming ETL</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="merge-into-upsert">MERGE INTO (Upsert)</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">MERGE</span> <span class="kw">INTO</span> target t</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">USING</span> <span class="kw">source</span> s</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> t.<span class="kw">id</span> <span class="op">=</span> s.<span class="kw">id</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> MATCHED <span class="cf">THEN</span> <span class="kw">UPDATE</span> <span class="kw">SET</span> t.name <span class="op">=</span> s.name, t.updated <span class="op">=</span> s.updated</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> <span class="kw">NOT</span> MATCHED <span class="cf">THEN</span> <span class="kw">INSERT</span> (<span class="kw">id</span>, name, updated) <span class="kw">VALUES</span> (s.<span class="kw">id</span>, s.name, s.updated)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> <span class="kw">NOT</span> MATCHED <span class="kw">BY</span> <span class="kw">SOURCE</span> <span class="cf">THEN</span> <span class="kw">DELETE</span>;</span></code></pre></div>
 <ul>
-<li>Idempotent: skips already-processed files</li>
-<li>Good for thousands of files; Auto Loader better for millions</li>
+<li>Atomic upsert: insert + update + delete in one statement</li>
+<li>Exactly-once semantics with Delta Lake</li>
 </ul>
+<hr />
+<h2 id="clone-table-copy">CLONE (Table Copy)</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Deep Clone: full physical copy of data + metadata</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="kw">backup</span> DEEP <span class="kw">CLONE</span> source_table;</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Shallow Clone: copy metadata only, reference source data files</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> test_copy SHALLOW <span class="kw">CLONE</span> source_table;</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Deep Clone</th>
+<th>Shallow Clone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data copied?</td>
+<td>Yes (full copy)</td>
+<td>No (references source)</td>
+</tr>
+<tr>
+<td>Independent?</td>
+<td>Fully independent</td>
+<td>Depends on source</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Backups, migration</td>
+<td>Testing, experiments</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>Storage × 2</td>
+<td>Minimal</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="change-data-feed-cdf">Change Data Feed (CDF)</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Enable CDF on table</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> my_table <span class="kw">SET</span> TBLPROPERTIES (delta.enableChangeDataFeed <span class="op">=</span> <span class="kw">true</span>);</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Read changes (batch)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_changes(<span class="st">&#39;my_table&#39;</span>, <span class="dv">2</span>);       <span class="co">-- from version 2</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_changes(<span class="st">&#39;my_table&#39;</span>, <span class="dv">2</span>, <span class="dv">5</span>);     <span class="co">-- versions 2-5</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- Read changes (streaming)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (spark.readStream</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    .option(<span class="st">&quot;readChangeFeed&quot;</span>, <span class="st">&quot;true&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .option(<span class="st">&quot;startingVersion&quot;</span>, <span class="dv">2</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    .table(<span class="st">&quot;my_table&quot;</span>))</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th><code>_change_type</code></th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>insert</code></td>
+<td>New row</td>
+</tr>
+<tr>
+<td><code>update_preimage</code></td>
+<td>Row before update</td>
+</tr>
+<tr>
+<td><code>update_postimage</code></td>
+<td>Row after update</td>
+</tr>
+<tr>
+<td><code>delete</code></td>
+<td>Deleted row</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="structured-streaming-triggers">Structured Streaming
 Triggers</h2>
@@ -339,40 +472,75 @@ Triggers</h2>
 </tbody>
 </table>
 <hr />
+<h2 id="structured-streaming-output-modes">Structured Streaming Output
+Modes</h2>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behavior</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>append</code></td>
+<td>Only new rows</td>
+<td>Raw ingestion, logs</td>
+</tr>
+<tr>
+<td><code>complete</code></td>
+<td>Full result rewrite</td>
+<td>Aggregations (groupBy)</td>
+</tr>
+<tr>
+<td><code>update</code></td>
+<td>Only changed rows</td>
+<td>Stateful updates</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(df.writeStream</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    .outputMode(<span class="st">&quot;append&quot;</span>)          <span class="co"># or &quot;complete&quot;, &quot;update&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .option(<span class="st">&quot;checkpointLocation&quot;</span>, path)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    .trigger(availableNow<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    .toTable(<span class="st">&quot;target&quot;</span>))</span></code></pre></div>
+<hr />
 <h2 id="window-functions">Window Functions</h2>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Ranking</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> cat <span class="kw">ORDER</span> <span class="kw">BY</span> val <span class="kw">DESC</span>) <span class="kw">AS</span> rn</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> cat <span class="kw">ORDER</span> <span class="kw">BY</span> val <span class="kw">DESC</span>) <span class="kw">AS</span> rnk</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="op">..</span>.)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- Running total</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">SUM</span>(amount) <span class="kw">OVER</span> (</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">PARTITION</span> <span class="kw">BY</span> <span class="kw">category</span> </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dt">date</span> </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ROWS</span> <span class="kw">BETWEEN</span> <span class="kw">UNBOUNDED</span> <span class="kw">PRECEDING</span> <span class="kw">AND</span> <span class="kw">CURRENT</span> <span class="kw">ROW</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> running_total</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- Lead / Lag</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">LAG</span>(price, <span class="dv">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dt">date</span>) <span class="kw">AS</span> prev_price</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">LEAD</span>(price, <span class="dv">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dt">date</span>) <span class="kw">AS</span> next_price</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Ranking</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> cat <span class="kw">ORDER</span> <span class="kw">BY</span> val <span class="kw">DESC</span>) <span class="kw">AS</span> rn</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> cat <span class="kw">ORDER</span> <span class="kw">BY</span> val <span class="kw">DESC</span>) <span class="kw">AS</span> rnk</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="op">..</span>.)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- Running total</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">SUM</span>(amount) <span class="kw">OVER</span> (</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">PARTITION</span> <span class="kw">BY</span> <span class="kw">category</span> </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dt">date</span> </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ROWS</span> <span class="kw">BETWEEN</span> <span class="kw">UNBOUNDED</span> <span class="kw">PRECEDING</span> <span class="kw">AND</span> <span class="kw">CURRENT</span> <span class="kw">ROW</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> running_total</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- Lead / Lag</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="fu">LAG</span>(price, <span class="dv">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dt">date</span>) <span class="kw">AS</span> prev_price</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">LEAD</span>(price, <span class="dv">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dt">date</span>) <span class="kw">AS</span> next_price</span></code></pre></div>
 <hr />
 <h2 id="higher-order-functions">Higher-Order Functions</h2>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Array operations</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>explode(array_col)                    <span class="co">-- array → rows</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>TRANSFORM(arr, x <span class="op">-&gt;</span> x <span class="op">*</span> <span class="dv">2</span>)           <span class="co">-- map each element</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FILTER</span>(arr, x <span class="op">-&gt;</span> x <span class="op">&gt;</span> <span class="dv">0</span>)              <span class="co">-- filter elements</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">EXISTS</span>(arr, x <span class="op">-&gt;</span> x <span class="op">&gt;</span> <span class="dv">100</span>)            <span class="co">-- boolean check</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Array operations</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>explode(array_col)                    <span class="co">-- array → rows</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>TRANSFORM(arr, x <span class="op">-&gt;</span> x <span class="op">*</span> <span class="dv">2</span>)           <span class="co">-- map each element</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FILTER</span>(arr, x <span class="op">-&gt;</span> x <span class="op">&gt;</span> <span class="dv">0</span>)              <span class="co">-- filter elements</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">EXISTS</span>(arr, x <span class="op">-&gt;</span> x <span class="op">&gt;</span> <span class="dv">100</span>)            <span class="co">-- boolean check</span></span></code></pre></div>
 <hr />
 <h2 id="ctes-common-table-expressions">CTEs (Common Table
 Expressions)</h2>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    step1 <span class="kw">AS</span> (<span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> <span class="dt">raw</span>),</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    step2 <span class="kw">AS</span> (<span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> step1 <span class="kw">WHERE</span> <span class="op">..</span>.),</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    step3 <span class="kw">AS</span> (<span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> step2 <span class="kw">JOIN</span> <span class="op">..</span>.)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> step3;</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    step1 <span class="kw">AS</span> (<span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> <span class="dt">raw</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    step2 <span class="kw">AS</span> (<span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> step1 <span class="kw">WHERE</span> <span class="op">..</span>.),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    step3 <span class="kw">AS</span> (<span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> step2 <span class="kw">JOIN</span> <span class="op">..</span>.)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> step3;</span></code></pre></div>
 <hr />
 <h2 id="key-exam-points">Key Exam Points</h2>
 <ul>
@@ -380,6 +548,7 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#c
 versions</li>
 <li><code>VACUUM</code> removes old files; breaks time travel for
 removed versions</li>
+<li><code>VACUUM</code> default retention: 7 days (168 hours)</li>
 <li>Checkpoint = streaming state (exactly-once guarantee)</li>
 <li><code>availableNow=True</code> = best for scheduled incremental
 jobs</li>
@@ -388,6 +557,18 @@ partitioning)</li>
 <li><code>explode()</code> turns array elements into rows</li>
 <li>Window functions need
 <code>OVER (PARTITION BY ... ORDER BY ...)</code></li>
+<li><code>MERGE INTO</code> = atomic upsert (insert + update + optional
+delete)</li>
+<li>Deep Clone = full copy; Shallow Clone = metadata only</li>
+<li>CDF: <code>_change_type</code> column tracks
+insert/update/delete</li>
+<li>CDF must be enabled with
+<code>delta.enableChangeDataFeed = true</code></li>
+<li><code>table_changes()</code> reads CDF history (SQL)</li>
+<li>Output mode <code>append</code> = default for streaming tables</li>
+<li><code>DESCRIBE DETAIL</code> → file count, size, location</li>
+<li><code>DESCRIBE HISTORY</code> → version history, operations,
+timestamps</li>
 </ul>
 </body>
 </html>
