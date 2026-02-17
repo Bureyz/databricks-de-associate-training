@@ -170,7 +170,7 @@
 | M08 | Lakeflow Jobs & Orchestration | LAB_08 | Triggers, Dependencies, Job Configuration |
 | M09 | Governance & Security | LAB_09 | Permissions, Row Filters, Masking |
 
-> **Quizy:** `day{1,2,3}/materials/day{1,2,3}_quiz.pdf` -- 20 pytan exam-style na koniec kazdego dnia
+> **Quizy:** `materials/quiz/day{1,2,3}_quiz.pdf` -- 20 pytan exam-style na koniec kazdego dnia
 
 ---
 
@@ -337,7 +337,7 @@ Każdy notebook demo powinien mieć spójną strukturę:
 | 6 | **LAB 02: Ingestion & Transforms** — odczyt CSV, transformacje, zapis Delta | [L] | 40 min | `lab/LAB_02_guide.pdf` + `lab/LAB_02_code.ipynb` |
 | | Przerwa | | 10 min | |
 | 7 | **M03: Delta Lake Fundamentals** — ACID, Delta Log, Schema Enforcement & Evolution, Time Travel, DESCRIBE HISTORY/DETAIL, RESTORE | [D] | 55 min | `demo/M03_delta_fundamentals` |
-| 8 | **Quiz Dnia 1** (5-10 pytan exam-style) + Q&A + preview dnia 2 | [T] | 15 min | `materials/day1_quiz.pdf` |
+| 8 | **Quiz Dnia 1** (5-10 pytan exam-style) + Q&A + preview dnia 2 | [T] | 15 min | `materials/quiz/day1_quiz.pdf` |
 
 > Dzien 1: ~330 min tresci + 30 min przerw + ~45 min obiad = 6h 45min
 
@@ -360,7 +360,7 @@ Każdy notebook demo powinien mieć spójną strukturę:
 | 7 | **LAB 05: Streaming & Auto Loader** — Auto Loader, streaming do Delta, trigger.availableNow | [L] | 35 min | `lab/LAB_05_guide.pdf` + `lab/LAB_05_code.ipynb` |
 | | Przerwa | | 10 min | |
 | 8 | **M06: Advanced Transforms — PySpark & SQL** — Window Functions, CTE, Subqueries, Explode, JSON, Date, CASE WHEN, UDF, Higher-order functions, CTAS | [D] | 55 min | `demo/M06_advanced_transforms` |
-| 9 | **Quiz Dnia 2** (5-10 pytan exam-style) + Q&A | [T] | 15 min | `materials/day2_quiz.pdf` |
+| 9 | **Quiz Dnia 2** (5-10 pytan exam-style) + Q&A | [T] | 15 min | `materials/quiz/day2_quiz.pdf` |
 
 > Dzien 2: ~325 min tresci + 30 min przerw + ~45 min obiad = 6h 40min
 
@@ -383,7 +383,7 @@ Każdy notebook demo powinien mieć spójną strukturę:
 | | Przerwa | | 10 min | |
 | 7 | **M09: Governance & Security** -- Unity Catalog, GRANT/REVOKE, Row Filters, Column Masks, Lineage, Delta Sharing, Information Schema, Data Classification, ABAC | [D] | 50 min | `demo/M09_governance` |
 | 8 | **LAB 09: Governance** -- Permissions, Row Filters, Column Masking, Information Schema | [L] | 30 min | `lab/LAB_09_guide.pdf` + `lab/LAB_09_code.ipynb` |
-| 9 | **Quiz Dnia 3** + **Exam Prep** -- exam tips, zasoby do nauki, Q&A koncowe | [T] | 25 min | `materials/day3_quiz.pdf` + Slajdy |
+| 9 | **Quiz Dnia 3** + **Exam Prep** -- exam tips, zasoby do nauki, Q&A koncowe | [T] | 25 min | `materials/quiz/day3_quiz.pdf` + Slajdy |
 > Dzien 3: ~335 min tresci + 30 min przerw + ~45 min obiad = 6h 50min
 
 ---

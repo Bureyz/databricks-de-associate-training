@@ -46,8 +46,8 @@ Each module has a corresponding hands-on lab (`LAB_XX_code.ipynb` + `LAB_XX_guid
 
 ## Additional Materials
 
-- **Quizzes:** 3 x 20 exam-style questions per day (PDF in `training_2026/dayX/materials/`)
-- **Cheatsheets:** Quick reference per day (PDF in `training_2026/dayX/materials/`)
+- **Quizzes:** 3 x 20 exam-style questions per day (PDF in `materials/quiz/`)
+- **Cheatsheets:** Quick reference per day (PDF in `materials/cheatsheet/`)
 - **Lab Guides:** Step-by-step instructions (PDF in `training_2026/dayX/lab/`)
 - **Training Plan:** `docs/TRAINING_PLAN_2026.md`
 
