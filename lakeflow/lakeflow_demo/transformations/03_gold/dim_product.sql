@@ -5,6 +5,7 @@
 CREATE OR REFRESH MATERIALIZED VIEW dim_product
 AS
 SELECT
+  row_number() OVER (ORDER BY product_id) AS product_key,
   product_id,
   product_name,
   subcategory_code,
