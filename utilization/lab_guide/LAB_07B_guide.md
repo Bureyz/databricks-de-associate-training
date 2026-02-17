@@ -30,15 +30,15 @@ After completing this lab you will be able to:
 
 ### Task 1: Prepare Workspace
 
-Import medallion notebooks from `materials/medallion/` and `materials/orchestration/` into your Databricks workspace.
+Import medallion notebooks from `lab/materials/medallion/` and `lab/materials/orchestration/` into your Databricks workspace.
 
 **Notebooks needed:**
-- `bronze_orders.py` — batch JSON read to Delta
-- `silver_orders_cleaned.py` — quality filters + computed columns
-- `gold_daily_orders.py` — daily order aggregation
-- `bronze_customers.py` — batch CSV read to Delta
-- `silver_customers.py` — dedup + normalization
-- `gold_customer_orders_summary.py` — join + aggregate metrics
+- `bronze_orders.ipynb` — batch JSON read to Delta
+- `silver_orders_cleaned.ipynb` — quality filters + computed columns
+- `gold_daily_orders.ipynb` — daily order aggregation
+- `bronze_customers.ipynb` — batch CSV read to Delta
+- `silver_customers.ipynb` — dedup + normalization
+- `gold_customer_orders_summary.ipynb` — join + aggregate metrics
 - `task_validate_pipeline.py` — validates all tables + logs to event_log
 
 ---
