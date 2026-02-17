@@ -30,7 +30,7 @@ After completing this lab you will be able to:
 
 ### Task 1: Prepare Workspace
 
-Import medallion notebooks from `lab/materials/medallion/` and `lab/materials/orchestration/` into your Databricks workspace.
+Import medallion notebooks from `materials/medallion/` and `materials/orchestration/` into your Databricks workspace.
 
 **Notebooks needed:**
 - `bronze_orders.ipynb` — batch JSON read to Delta

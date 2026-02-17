@@ -62,9 +62,10 @@ Each module has a corresponding hands-on lab (`LAB_XX_code.ipynb` + `LAB_XX_guid
 │   └── workshop/
 ├── docs/                             # Training plan & documentation
 │   └── TRAINING_PLAN_2026.md
-├── lakeflow/                         # Lakeflow (DLT) pipeline definitions
-│   ├── lakeflow_trn_pipeline/
-│   └── lakeflow_workshop/
+├── materials/                         # Shared training materials
+│   ├── medallion/                    # Medallion pipeline notebooks (Bronze/Silver/Gold)
+│   ├── orchestration/                # Orchestration task notebooks
+│   └── lakeflow/                     # Lakeflow (DLT) pipeline definitions
 ├── training_2026/                    # Main training content
 │   ├── setup/
 │   │   ├── 00_pre_config.ipynb       # Trainer: create catalogs for participants
