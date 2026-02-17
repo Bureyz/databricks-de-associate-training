@@ -1,0 +1,26 @@
+flowchart LR
+    subgraph Source["Tabela z CDF"]
+        TBL["orders\nTBLPROPERTIES\ndelta.enableChangeDataFeed = true"]
+    end
+
+    TBL -->|"INSERT"| CDF1["_change_type = insert"]
+    TBL -->|"UPDATE"| CDF2["_change_type =\nupdate_preimage\n+ update_postimage"]
+    TBL -->|"DELETE"| CDF3["_change_type = delete"]
+
+    subgraph Read["Odczyt zmian"]
+        Q["table_changes(\n  'orders',\n  startingVersion\n)"]
+    end
+
+    CDF1 --> Q
+    CDF2 --> Q
+    CDF3 --> Q
+
+    Q --> DS["Downstream\nETL pipeline\nIncrementalny\nprzetwarzanie"]
+
+    style Source fill:#e8f0fe,color:#202124,stroke:#1a73e8,stroke-width:2px
+    style TBL fill:#1a73e8,color:#fff,stroke:#1557b0
+    style CDF1 fill:#e6f4ea,color:#202124,stroke:#34a853
+    style CDF2 fill:#fbbc04,color:#202124,stroke:#f9a825
+    style CDF3 fill:#fce8e6,color:#202124,stroke:#ea4335
+    style Read fill:#e8f0fe,color:#202124,stroke:#1a73e8,stroke-width:2px
+    style DS fill:#34a853,color:#fff,stroke:#1e8e3e,stroke-width:2px

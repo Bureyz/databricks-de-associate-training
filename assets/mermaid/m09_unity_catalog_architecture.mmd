@@ -1,0 +1,40 @@
+graph TD
+    MS["Metastore\n(Unity Catalog)"] --> CAT1["Catalog: production"]
+    MS --> CAT2["Catalog: development"]
+    MS --> CAT3["Catalog: sandbox"]
+
+    CAT1 --> S1["Schema: sales"]
+    CAT1 --> S2["Schema: finance"]
+    CAT2 --> S3["Schema: staging"]
+
+    S1 --> T1["Table: orders"]
+    S1 --> T2["Table: customers"]
+    S1 --> V1["View: daily_revenue"]
+    S2 --> T3["Table: invoices"]
+    S3 --> T4["Table: raw_events"]
+
+    T1 --- COL["Columns\nRow Filters\nColumn Masks"]
+
+    subgraph External["External Locations"]
+        EL1["s3://bucket/path"]
+        EL2["abfss://container@storage"]
+    end
+
+    subgraph Credentials["Storage Credentials"]
+        CR1["AWS IAM Role"]
+        CR2["Azure Service Principal"]
+    end
+
+    Credentials --> External
+    External --> T1
+
+    style MS fill:#1a73e8,color:#fff,stroke:#1557b0,stroke-width:2px
+    style CAT1 fill:#e8f0fe,color:#202124,stroke:#1a73e8,stroke-width:2px
+    style CAT2 fill:#e8f0fe,color:#202124,stroke:#1a73e8,stroke-width:2px
+    style CAT3 fill:#e8f0fe,color:#202124,stroke:#1a73e8,stroke-width:2px
+    style S1 fill:#e6f4ea,color:#202124,stroke:#34a853
+    style S2 fill:#e6f4ea,color:#202124,stroke:#34a853
+    style S3 fill:#e6f4ea,color:#202124,stroke:#34a853
+    style External fill:#fbbc04,color:#202124,stroke:#f9a825,stroke-width:2px
+    style Credentials fill:#fce8e6,color:#202124,stroke:#ea4335,stroke-width:2px
+    style COL fill:#fff3e0,color:#202124,stroke:#fbbc04

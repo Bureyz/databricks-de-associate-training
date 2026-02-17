@@ -1,0 +1,32 @@
+graph TD
+    subgraph TL["_delta_log/"]
+        J0["000000.json\nCREATE TABLE\n+ add file1.parquet"]
+        J1["000001.json\nadd file2.parquet\nadd file3.parquet"]
+        J2["000002.json\nremove file1.parquet\nadd file4.parquet"]
+        J3["..."]
+        CP["000010.checkpoint.parquet\nSkompresowany stan\npo 10 commitach"]
+        J11["000011.json"]
+        J12["000012.json"]
+    end
+
+    J0 --> J1 --> J2 --> J3 --> CP --> J11 --> J12
+
+    subgraph Actions["Akcje w JSON"]
+        A1["commitInfo - metadane operacji"]
+        A2["add - dodane pliki Parquet"]
+        A3["remove - usuniete pliki Parquet"]
+        A4["metaData - schemat tabeli"]
+    end
+
+    CP -.->|"Snapshot stanu\nzamiast czytac\nwszystkie JSON"| FAST["Szybki odczyt"]
+
+    style TL fill:#e8f0fe,color:#202124,stroke:#1a73e8,stroke-width:2px
+    style CP fill:#fbbc04,color:#202124,stroke:#f9a825,stroke-width:2px
+    style Actions fill:#e6f4ea,color:#202124,stroke:#34a853
+    style FAST fill:#34a853,color:#fff,stroke:#1e8e3e
+    style J0 fill:#fff,color:#202124,stroke:#1a73e8
+    style J1 fill:#fff,color:#202124,stroke:#1a73e8
+    style J2 fill:#fff,color:#202124,stroke:#1a73e8
+    style J3 fill:#fff,color:#202124,stroke:#5f6368
+    style J11 fill:#fff,color:#202124,stroke:#1a73e8
+    style J12 fill:#fff,color:#202124,stroke:#1a73e8

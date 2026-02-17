@@ -1,0 +1,38 @@
+graph TD
+    subgraph Hierarchy["Dziedziczenie uprawnien"]
+        CAT["Catalog: production\nGRANT USE CATALOG"] --> SCH["Schema: sales\nGRANT USE SCHEMA"]
+        SCH --> TBL["Table: orders\nGRANT SELECT"]
+        SCH --> VW["View: daily_summary\nGRANT SELECT"]
+    end
+
+    subgraph Inheritance["Zasada dziedziczenia"]
+        direction TB
+        I1["Uprawnienie na CATALOG\ndziedziczy do wszystkich\nSCHEMA i TABLE ponizej"]
+        I2["Uprawnienie na SCHEMA\ndziedziczy do wszystkich\nTABLE i VIEW ponizej"]
+        I3["Uprawnienie na TABLE/VIEW\ndotyczy tylko tego obiektu"]
+    end
+
+    subgraph Principals["Podmioty"]
+        U1["User\npojedynczy uzytkownik"]
+        G1["Group\ngrupa uzytkownikow"]
+        SP["Service Principal\nkonto serwisowe"]
+    end
+
+    subgraph Privileges["Kluczowe uprawnienia"]
+        P1["SELECT - odczyt danych"]
+        P2["MODIFY - zapis danych"]
+        P3["CREATE TABLE - tworzenie tabel"]
+        P4["ALL PRIVILEGES - pelny dostep"]
+        P5["USAGE - dostep do obiektu"]
+    end
+
+    Principals -->|"GRANT privilege\nON object\nTO principal"| Hierarchy
+
+    style Hierarchy fill:#e8f0fe,color:#202124,stroke:#1a73e8,stroke-width:2px
+    style Inheritance fill:#e6f4ea,color:#202124,stroke:#34a853,stroke-width:2px
+    style Principals fill:#fbbc04,color:#202124,stroke:#f9a825,stroke-width:2px
+    style Privileges fill:#fce8e6,color:#202124,stroke:#ea4335,stroke-width:2px
+    style CAT fill:#1a73e8,color:#fff,stroke:#1557b0
+    style SCH fill:#34a853,color:#fff,stroke:#1e8e3e
+    style TBL fill:#e6f4ea,color:#202124,stroke:#34a853
+    style VW fill:#e6f4ea,color:#202124,stroke:#34a853

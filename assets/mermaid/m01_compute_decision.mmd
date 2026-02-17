@@ -1,0 +1,17 @@
+flowchart TD
+    A{"What type of workload?"} --> B{"Scheduled\nproduction job?"}
+    B -->|YES| JC["Job Cluster\nEphemeral, cost-efficient\nAuto-terminates after job"]
+    B -->|NO| C{"Interactive\ndevelopment?"}
+    C -->|YES| AP["All-Purpose Cluster\nShared, always-on\n3-5 min startup"]
+    C -->|NO| D{"SQL / BI\nquery?"}
+    D -->|YES| SW["SQL Warehouse\nOptimized for SQL\nConnects to BI tools"]
+    D -->|NO| SL["Serverless Notebook\nInstant start under 10s\nPay-per-use"]
+
+    style A fill:#f8f9fa,color:#202124,stroke:#5f6368,stroke-width:2px
+    style B fill:#f8f9fa,color:#202124,stroke:#5f6368,stroke-width:2px
+    style C fill:#f8f9fa,color:#202124,stroke:#5f6368,stroke-width:2px
+    style D fill:#f8f9fa,color:#202124,stroke:#5f6368,stroke-width:2px
+    style JC fill:#34a853,color:#fff,stroke:#2d8f47,stroke-width:2px
+    style AP fill:#4285f4,color:#fff,stroke:#3367d6,stroke-width:2px
+    style SW fill:#fbbc04,color:#202124,stroke:#e0a800,stroke-width:2px
+    style SL fill:#ea4335,color:#fff,stroke:#c5221f,stroke-width:2px

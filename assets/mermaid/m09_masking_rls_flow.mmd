@@ -1,0 +1,28 @@
+flowchart TD
+    subgraph Masking["Column Masking"]
+        direction TB
+        Q1["SELECT email, ssn\nFROM customers"] --> FN1["Funkcja maskujaca:\nCASE WHEN\n  is_member('admin')\nTHEN ssn\nELSE '***-**-****'\nEND"]
+        FN1 --> R1["admin: 123-45-6789\nuser: ***-**-****"]
+    end
+
+    subgraph RLS["Row-Level Security"]
+        direction TB
+        Q2["SELECT *\nFROM orders"] --> FN2["Filtr wierszy:\nWHERE region =\ncurrent_user_region()"]
+        FN2 --> R2["Uzytkownik widzi\ntylko swoje dane\nregionalne"]
+    end
+
+    subgraph Apply["Zastosowanie"]
+        A1["ALTER TABLE customers\nALTER COLUMN ssn\nSET MASK mask_ssn"]
+        A2["ALTER TABLE orders\nSET ROW FILTER\nfilter_by_region ON (region)"]
+    end
+
+    Masking --- Apply
+    RLS --- Apply
+
+    style Masking fill:#e8f0fe,color:#202124,stroke:#1a73e8,stroke-width:2px
+    style RLS fill:#fce8e6,color:#202124,stroke:#ea4335,stroke-width:2px
+    style Apply fill:#e6f4ea,color:#202124,stroke:#34a853,stroke-width:2px
+    style FN1 fill:#fbbc04,color:#202124,stroke:#f9a825
+    style FN2 fill:#fbbc04,color:#202124,stroke:#f9a825
+    style R1 fill:#e6f4ea,color:#202124,stroke:#34a853
+    style R2 fill:#e6f4ea,color:#202124,stroke:#34a853
