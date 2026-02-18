@@ -97,11 +97,22 @@ Each module has a corresponding hands-on lab (`LAB_XX_code.ipynb` + `LAB_XX_guid
 
 ## How to Use
 
+### Trainer Setup (before training)
+
 1. Clone the repository to your Databricks Workspace via **Repos**
-2. Run `notebooks/setup/00_setup.ipynb` to create your catalog and schemas
-3. Follow the modules in order (M00 through M10)
-4. Complete the lab after each module using the guide and code notebook
-5. Take the daily quiz to test your knowledge
+2. In Unity Catalog settings, copy the **Storage Account URL** for the metastore (needed for catalog external locations)
+3. Create a **training group** in Account Console → Groups (e.g., `training-de-associate`) and add all participants
+4. Open `notebooks/setup/00_pre_config.ipynb`:
+   - Set the storage account link for Unity Catalog catalogs
+   - Set the training group name
+   - Run all cells — this creates individual catalogs and schemas for each participant
+
+### Participant Setup
+
+1. Open `notebooks/setup/00_setup.ipynb` and run all cells to validate your environment
+2. Follow the modules in order (M00 through M10)
+3. Complete the lab after each module using the guide and code notebook
+4. Take the daily quiz to test your knowledge
 
 ## Project: RetailHub
 
