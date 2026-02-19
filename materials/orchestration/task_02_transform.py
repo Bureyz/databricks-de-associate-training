@@ -7,6 +7,7 @@
 # COMMAND ----------
 
 from pyspark.sql.functions import *
+from datetime import date
 import json
 
 # Parameters
@@ -14,7 +15,7 @@ dbutils.widgets.text("source_table", "samples.nyctaxi.trips")
 dbutils.widgets.text("run_date", "")
 
 source_table = dbutils.widgets.get("source_table")
-run_date = dbutils.widgets.get("run_date") or str(current_date())
+run_date = dbutils.widgets.get("run_date") or str(date.today())
 
 # COMMAND ----------
 
